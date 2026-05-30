@@ -212,6 +212,150 @@ body {
   font-weight: 500;
 }
 
+/* CALENDAR */
+.calendar-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 12px 12px;
+  margin-bottom: 12px;
+}
+.cal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 10px;
+}
+.cal-month { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+.cal-nav {
+  background: none;
+  border: none;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-radius: 8px;
+}
+.cal-nav:active { background: var(--line-soft); }
+.cal-nav svg { width: 18px; height: 18px; }
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-faint);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.cal-weekdays span:first-child { color: #d06666; }
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 42px;
+  gap: 3px;
+}
+.cal-cell {
+  height: 100%;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  position: relative;
+  border: 1.5px solid transparent;
+  transition: transform 0.1s;
+}
+.cal-cell:active { transform: scale(0.92); }
+.cal-cell.empty { cursor: default; }
+.cal-cell.future { color: var(--ink-faint); opacity: 0.45; cursor: default; }
+/* no-spend day: gentle green emphasis */
+.cal-cell.nospend {
+  background: var(--good-soft);
+  color: var(--good);
+}
+.cal-cell.nospend::after {
+  content: '✓';
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--good);
+  opacity: 0.7;
+}
+/* spend day */
+.cal-cell.spend { background: var(--bg-soft); }
+.cal-amt {
+  position: absolute;
+  bottom: 3px;
+  left: 0; right: 0;
+  text-align: center;
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  line-height: 1;
+  white-space: nowrap;
+}
+.cal-cell.spend.regret-day { background: var(--warn-soft); }
+.cal-cell.spend.regret-day .cal-amt { color: var(--warn); }
+.cal-cell.today { border-color: var(--ink); }
+.cal-cell.selected { border-color: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent-soft); }
+.cal-num { line-height: 1; }
+/* on spend days, lift the number a touch so it doesn't collide with the amount */
+.cal-cell.spend .cal-num { transform: translateY(-3px); }
+.cal-legend {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.cal-legend-item { display: flex; align-items: center; gap: 4px; }
+.cal-legend-dot { width: 10px; height: 10px; border-radius: 4px; display: inline-block; }
+.cal-legend-dot.nospend { background: var(--good-soft); border: 1px solid var(--good); }
+.cal-legend-dot.spend { background: var(--bg-soft); border: 1px solid var(--line); }
+.cal-legend-dot.today-ring { background: transparent; border: 1.5px solid var(--ink); }
+/* selected day detail */
+.cal-detail {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.cal-detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.cal-detail-date { font-size: 14px; font-weight: 700; letter-spacing: -0.02em; }
+.cal-detail-total { font-size: 13px; font-weight: 700; }
+.cal-detail-total.zero { color: var(--good); }
+.cal-detail-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 13px;
+  border-top: 1px solid var(--line-soft);
+}
+.cal-detail-line .nm { display: flex; align-items: center; gap: 7px; }
+.cal-detail-empty {
+  text-align: center;
+  font-size: 13px;
+  color: var(--good);
+  font-weight: 600;
+  padding: 8px 0;
+}
+
 /* BUDGET CARD */
 .budget-card {
   background: var(--bg-card);
@@ -284,7 +428,7 @@ body {
   font-size: 15px;
   margin-bottom: 6px;
   color: var(--ink);
-  padding-right: 70px;
+  padding-right: 104px;
   letter-spacing: -0.02em;
 }
 .wish-meta {
@@ -377,6 +521,12 @@ body {
   object-fit: cover;
 }
 .purchase-body { flex: 1; min-width: 0; }
+.item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
 .purchase-name {
   font-weight: 600;
   font-size: 14px;
@@ -925,6 +1075,32 @@ body {
       <div class="stat-sub">최근 10건 평균</div>
     </div>
   </div>
+
+  <div class="section-title" id="calTitle">
+    소비 달력
+    <span class="meta" id="noSpendMeta">무지출 0일</span>
+  </div>
+  <div class="calendar-card">
+    <div class="cal-head">
+      <button class="cal-nav" id="calPrev" aria-label="이전 달">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+      <div class="cal-month" id="calMonth">—</div>
+      <button class="cal-nav" id="calNext" aria-label="다음 달">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="cal-weekdays">
+      <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span class="cal-legend-item"><span class="cal-legend-dot nospend"></span>무지출</span>
+      <span class="cal-legend-item"><span class="cal-legend-dot spend"></span>소비</span>
+      <span class="cal-legend-item"><span class="cal-legend-dot today-ring"></span>오늘</span>
+    </div>
+  </div>
+  <div id="calDayDetail"></div>
 
   <div id="unusedAlert"></div>
 
@@ -1506,15 +1682,47 @@ function openModal(id) {
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
-  if (id === 'modalSpend') removePhoto('spendPhoto');
-  if (id === 'modalOwn') removePhoto('ownPhoto');
+  resetModalForm(id);
+}
+
+// clear inputs + edit state so the next open starts fresh
+function resetModalForm(id) {
+  if (id === 'modalWish') {
+    editingWishId = null;
+    document.getElementById('wishName').value = '';
+    document.getElementById('wishPrice').value = '';
+    document.getElementById('wishReason').value = '';
+    document.getElementById('dupWarnWish').innerHTML = '';
+    document.querySelectorAll('#wishCooldownChips .chip').forEach(c =>
+      c.classList.toggle('active', c.dataset.days === '3'));
+    document.querySelector('#modalWish .modal-title').textContent = '위시리스트에 담기';
+    document.querySelector('#modalWish .btn:not(.btn-ghost)').textContent = '담아두기';
+  }
+  if (id === 'modalSpend') {
+    editingSpendId = null;
+    document.getElementById('spendName').value = '';
+    document.getElementById('spendPrice').value = '';
+    document.getElementById('spendNote').value = '';
+    document.querySelectorAll('#spendEmotionChips .chip').forEach(c => c.classList.remove('active'));
+    removePhoto('spendPhoto');
+    document.querySelector('#modalSpend .modal-title').textContent = '방금 산 것을 기록';
+    document.querySelector('#modalSpend .modal-subtitle').textContent = '자세히 쓸수록 패턴이 보입니다. 인벤토리에도 같이 들어가요.';
+    document.querySelector('#modalSpend .btn:not(.btn-ghost)').textContent = '기록하기';
+  }
+  if (id === 'modalOwn') {
+    editingOwnId = null;
+    document.getElementById('ownName').value = '';
+    document.getElementById('ownEmoji').value = '';
+    removePhoto('ownPhoto');
+    document.querySelector('#modalOwn .modal-title').textContent = '가진 물건 등록';
+    document.querySelector('#modalOwn .btn:not(.btn-ghost)').textContent = '등록하기';
+  }
 }
 document.querySelectorAll('.modal-overlay').forEach(o => {
   o.addEventListener('click', e => {
     if (e.target === o) {
       o.classList.remove('active');
-      if (o.id === 'modalSpend') removePhoto('spendPhoto');
-      if (o.id === 'modalOwn') removePhoto('ownPhoto');
+      resetModalForm(o.id);
     }
   });
 });
@@ -1547,18 +1755,24 @@ document.getElementById('wishName').addEventListener('input', e => {
 });
 
 // ===== SAVE =====
+let editingWishId = null;
+let editingSpendId = null;
+let editingOwnId = null;
+
 function saveWish() {
   const name = document.getElementById('wishName').value.trim();
   const price = +document.getElementById('wishPrice').value || 0;
   const reason = document.getElementById('wishReason').value.trim();
   const days = +document.querySelector('#wishCooldownChips .chip.active').dataset.days;
   if (!name) { alert('이름을 적어주세요'); return; }
-  store.wish.push({ id: uid(), name, price, reason, days, createdAt: Date.now() });
+  if (editingWishId) {
+    const w = store.wish.find(x => x.id === editingWishId);
+    if (w) { w.name = name; w.price = price; w.reason = reason; w.days = days; }
+  } else {
+    store.wish.push({ id: uid(), name, price, reason, days, createdAt: Date.now() });
+  }
   saveStore();
   closeModal('modalWish');
-  document.getElementById('wishName').value = '';
-  document.getElementById('wishPrice').value = '';
-  document.getElementById('wishReason').value = '';
   renderAll();
 }
 
@@ -1570,26 +1784,32 @@ function saveSpend() {
   const emoChip = document.querySelector('#spendEmotionChips .chip.active');
   const emotion = emoChip ? emoChip.dataset.emo : 'need';
   if (!name) { alert('이름을 적어주세요'); return; }
-  const spendId = uid();
-  const photo = tempPhotos.spendPhoto;
-  store.spend.push({
-    id: spendId, name, price, cat, note, emotion,
-    photo, createdAt: Date.now(), regret: null,
-  });
-  store.own.push({
-    id: uid(), name, cat,
-    emoji: categoryEmoji(cat),
-    photo: null,
-    fromSpendId: spendId,
-    createdAt: Date.now(),
-  });
+  if (editingSpendId) {
+    const s = store.spend.find(x => x.id === editingSpendId);
+    if (s) {
+      s.name = name; s.price = price; s.cat = cat; s.note = note; s.emotion = emotion;
+      // photo: keep existing unless a new one was chosen, or it was removed
+      if (tempPhotos.spendPhoto !== undefined) s.photo = tempPhotos.spendPhoto;
+      // keep the linked inventory item's name/category in sync
+      const linked = store.own.find(o => o.fromSpendId === editingSpendId);
+      if (linked) { linked.name = name; linked.cat = cat; if (!linked.photo) linked.emoji = categoryEmoji(cat); }
+    }
+  } else {
+    const spendId = uid();
+    store.spend.push({
+      id: spendId, name, price, cat, note, emotion,
+      photo: tempPhotos.spendPhoto, createdAt: Date.now(), regret: null,
+    });
+    store.own.push({
+      id: uid(), name, cat,
+      emoji: categoryEmoji(cat),
+      photo: null,
+      fromSpendId: spendId,
+      createdAt: Date.now(),
+    });
+  }
   saveStore();
   closeModal('modalSpend');
-  document.getElementById('spendName').value = '';
-  document.getElementById('spendPrice').value = '';
-  document.getElementById('spendNote').value = '';
-  document.querySelectorAll('#spendEmotionChips .chip').forEach(c => c.classList.remove('active'));
-  removePhoto('spendPhoto');
   renderAll();
 }
 
@@ -1598,17 +1818,82 @@ function saveOwn() {
   const cat = document.getElementById('ownCat').value;
   const emoji = document.getElementById('ownEmoji').value.trim() || categoryEmoji(cat);
   if (!name) { alert('이름을 적어주세요'); return; }
-  store.own.push({
-    id: uid(), name, cat, emoji,
-    photo: tempPhotos.ownPhoto,
-    createdAt: Date.now(),
-  });
+  if (editingOwnId) {
+    const o = store.own.find(x => x.id === editingOwnId);
+    if (o) {
+      o.name = name; o.cat = cat; o.emoji = emoji;
+      if (tempPhotos.ownPhoto !== undefined) o.photo = tempPhotos.ownPhoto;
+    }
+  } else {
+    store.own.push({
+      id: uid(), name, cat, emoji,
+      photo: tempPhotos.ownPhoto,
+      createdAt: Date.now(),
+    });
+  }
   saveStore();
   closeModal('modalOwn');
-  document.getElementById('ownName').value = '';
-  document.getElementById('ownEmoji').value = '';
-  removePhoto('ownPhoto');
   renderAll();
+}
+
+// open modals in EDIT mode, pre-filling fields
+function editWish(id) {
+  const w = store.wish.find(x => x.id === id);
+  if (!w) return;
+  editingWishId = id;
+  document.getElementById('wishName').value = w.name || '';
+  document.getElementById('wishPrice').value = w.price || '';
+  document.getElementById('wishReason').value = w.reason || '';
+  document.querySelectorAll('#wishCooldownChips .chip').forEach(c =>
+    c.classList.toggle('active', +c.dataset.days === w.days));
+  document.querySelector('#modalWish .modal-title').textContent = '위시 수정';
+  document.querySelector('#modalWish .btn:not(.btn-ghost)').textContent = '저장';
+  openModal('modalWish');
+}
+
+function editSpend(id) {
+  const s = store.spend.find(x => x.id === id);
+  if (!s) return;
+  editingSpendId = id;
+  refreshCategorySelects();
+  document.getElementById('spendName').value = s.name || '';
+  document.getElementById('spendPrice').value = s.price || '';
+  document.getElementById('spendCat').value = s.cat;
+  document.getElementById('spendNote').value = s.note || '';
+  document.querySelectorAll('#spendEmotionChips .chip').forEach(c =>
+    c.classList.toggle('active', c.dataset.emo === s.emotion));
+  // show existing photo
+  tempPhotos.spendPhoto = s.photo || null;
+  const wrap = document.getElementById('spendPhotoWrap');
+  if (s.photo) {
+    wrap.innerHTML = `<div class="photo-preview"><img src="${s.photo}"><button class="photo-remove" type="button" onclick="removePhoto('spendPhoto')">×</button></div>`;
+  } else {
+    wrap.innerHTML = `<div class="photo-upload" onclick="document.getElementById('spendPhotoInput').click()">+ 영수증 또는 물건 사진 추가</div>`;
+  }
+  document.querySelector('#modalSpend .modal-title').textContent = '소비 기록 수정';
+  document.querySelector('#modalSpend .modal-subtitle').textContent = '내용을 고치면 연결된 물건 정보도 함께 바뀝니다.';
+  document.querySelector('#modalSpend .btn:not(.btn-ghost)').textContent = '저장';
+  openModal('modalSpend');
+}
+
+function editOwn(id) {
+  const o = store.own.find(x => x.id === id);
+  if (!o) return;
+  editingOwnId = id;
+  refreshCategorySelects();
+  document.getElementById('ownName').value = o.name || '';
+  document.getElementById('ownCat').value = o.cat;
+  document.getElementById('ownEmoji').value = (o.photo ? '' : (o.emoji || ''));
+  tempPhotos.ownPhoto = o.photo || null;
+  const wrap = document.getElementById('ownPhotoWrap');
+  if (o.photo) {
+    wrap.innerHTML = `<div class="photo-preview"><img src="${o.photo}"><button class="photo-remove" type="button" onclick="removePhoto('ownPhoto')">×</button></div>`;
+  } else {
+    wrap.innerHTML = `<div class="photo-upload" onclick="document.getElementById('ownPhotoInput').click()">+ 물건 사진 추가</div>`;
+  }
+  document.querySelector('#modalOwn .modal-title').textContent = '물건 수정';
+  document.querySelector('#modalOwn .btn:not(.btn-ghost)').textContent = '저장';
+  openModal('modalOwn');
 }
 
 // ===== CATEGORY MANAGEMENT =====
@@ -1879,6 +2164,145 @@ function renderHome() {
       openModal('modalRegret');
     }, 600);
   }
+
+  renderCalendar();
+}
+
+// ===== CALENDAR =====
+let calViewDate = new Date(); // which month is shown
+let calSelectedKey = null;    // 'YYYY-M-D' of selected day
+
+function dateKey(y, m, d) { return `${y}-${m}-${d}`; }
+
+// map: dateKey -> { total, count, items:[spend], hasRegret }
+function buildDaySpendMap() {
+  const map = {};
+  store.spend.forEach(s => {
+    const d = new Date(s.createdAt);
+    const k = dateKey(d.getFullYear(), d.getMonth(), d.getDate());
+    if (!map[k]) map[k] = { total: 0, count: 0, items: [], hasRegret: false };
+    map[k].total += (s.price || 0);
+    map[k].count += 1;
+    map[k].items.push(s);
+    if (s.regret === 2) map[k].hasRegret = true;
+  });
+  return map;
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+  const y = calViewDate.getFullYear();
+  const m = calViewDate.getMonth();
+  const now = new Date();
+  const todayY = now.getFullYear(), todayM = now.getMonth(), todayD = now.getDate();
+
+  document.getElementById('calMonth').textContent = `${y}년 ${m + 1}월`;
+
+  const map = buildDaySpendMap();
+  const firstDay = new Date(y, m, 1).getDay();      // 0=Sun
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+
+  // earliest record day — days before this aren't counted as "no-spend"
+  let earliest = null;
+  store.spend.forEach(s => { if (earliest == null || s.createdAt < earliest) earliest = s.createdAt; });
+  const earliestDate = earliest != null ? new Date(earliest) : null;
+  if (earliestDate) earliestDate.setHours(0, 0, 0, 0);
+
+  let html = '';
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-cell empty"></div>';
+
+  let noSpendCount = 0;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const k = dateKey(y, m, d);
+    const cellDate = new Date(y, m, d); cellDate.setHours(0,0,0,0);
+    const isToday = (y === todayY && m === todayM && d === todayD);
+    const isFuture = cellDate.getTime() > new Date(todayY, todayM, todayD).getTime();
+    const beforeStart = earliestDate ? cellDate.getTime() < earliestDate.getTime() : true;
+
+    const info = map[k];
+    let cls = 'cal-cell';
+    let inner = `<span class="cal-num">${d}</span>`;
+
+    if (isFuture) {
+      cls += ' future';
+    } else if (info) {
+      cls += ' spend';
+      if (info.hasRegret) cls += ' regret-day';
+      inner += `<span class="cal-amt">${shortAmt(info.total)}</span>`;
+    } else if (!beforeStart) {
+      // a tracked day with zero spend = no-spend day
+      cls += ' nospend';
+      noSpendCount++;
+    }
+
+    if (isToday) cls += ' today';
+    if (calSelectedKey === k) cls += ' selected';
+
+    const clickable = !isFuture;
+    html += `<div class="${cls}" ${clickable ? `data-key="${k}" data-day="${d}"` : ''}>${inner}</div>`;
+  }
+  grid.innerHTML = html;
+
+  document.getElementById('noSpendMeta').textContent = `이번 달 무지출 ${noSpendCount}일`;
+
+  // bind day clicks
+  grid.querySelectorAll('.cal-cell[data-key]').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const k = cell.dataset.key;
+      calSelectedKey = (calSelectedKey === k) ? null : k;
+      renderCalendar();
+      renderCalDayDetail();
+    });
+  });
+
+  renderCalDayDetail();
+}
+
+function shortAmt(n) {
+  if (!n) return '';
+  if (n >= 10000) {
+    const man = n / 10000;
+    return (Number.isInteger(man) ? man : man.toFixed(1)) + '만';
+  }
+  if (n >= 1000) return Math.round(n / 1000) + '천';
+  return fmt(n);
+}
+
+function renderCalDayDetail() {
+  const box = document.getElementById('calDayDetail');
+  if (!box) return;
+  if (!calSelectedKey) { box.innerHTML = ''; return; }
+
+  const [y, m, d] = calSelectedKey.split('-').map(Number);
+  const map = buildDaySpendMap();
+  const info = map[calSelectedKey];
+  const dateLabel = `${m + 1}월 ${d}일`;
+
+  if (!info) {
+    box.innerHTML = `<div class="cal-detail">
+      <div class="cal-detail-head"><span class="cal-detail-date">${dateLabel}</span></div>
+      <div class="cal-detail-empty">🌱 무지출 day — 잘 참았어요</div>
+    </div>`;
+    return;
+  }
+
+  const emoLabel = { need:'필요', impulse:'충동', stress:'스트레스', sale:'할인' };
+  const lines = info.items.map(s => {
+    const cc = categoryColor(s.cat);
+    return `<div class="cal-detail-line">
+      <span class="nm"><span class="tag" style="background:${hexToRgba(cc,0.14)};color:${cc}">${categoryEmoji(s.cat)} ${escapeHTML(s.cat)}</span>${escapeHTML(s.name)}</span>
+      <span style="font-weight:600">${fmt(s.price)}원</span>
+    </div>`;
+  }).join('');
+
+  box.innerHTML = `<div class="cal-detail">
+    <div class="cal-detail-head">
+      <span class="cal-detail-date">${dateLabel} · ${info.count}건</span>
+      <span class="cal-detail-total">${fmt(info.total)}원</span>
+    </div>
+    ${lines}
+  </div>`;
 }
 
 function getUnusedItems() {
@@ -1930,6 +2354,7 @@ function wishItemHTML(w, now, isReady) {
     ${w.reason ? `<div class="wish-reason">"${escapeHTML(w.reason)}"</div>` : ''}
     <div class="wish-actions">
       ${isReady ? `<button class="icon-btn act-decide" title="결정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5 9-9"/></svg></button>` : ''}
+      <button class="icon-btn act-edit" title="수정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
       <button class="icon-btn act-delete" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     </div>
   </div>`;
@@ -1941,6 +2366,8 @@ function bindWishActions(wrap) {
     const w = store.wish.find(x => x.id === id);
     const delBtn = el.querySelector('.act-delete');
     const decBtn = el.querySelector('.act-decide');
+    const editBtn = el.querySelector('.act-edit');
+    if (editBtn) editBtn.addEventListener('click', () => editWish(id));
     if (delBtn) delBtn.addEventListener('click', () => {
       if (confirm('위시에서 빼고 절약으로 기록할까요?')) {
         store.savedTotal = (store.savedTotal||0) + (w.price||0);
@@ -2038,8 +2465,27 @@ function renderSpend() {
         </div>
         ${s.note ? `<div style="margin-top:6px;font-size:12px;color:var(--ink-soft);line-height:1.5">"${escapeHTML(s.note)}"</div>` : ''}
       </div>
+      <div class="item-actions">
+        <button class="icon-btn act-edit-spend" title="수정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="icon-btn act-del-spend" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
     </div>`;
   }).join('');
+  wrap.querySelectorAll('.act-edit-spend').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); editSpend(btn.closest('.purchase-item').dataset.id); });
+  });
+  wrap.querySelectorAll('.act-del-spend').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = btn.closest('.purchase-item').dataset.id;
+      if (confirm('이 소비 기록을 삭제할까요?\n연결된 물건도 함께 지워집니다.')) {
+        store.spend = store.spend.filter(x => x.id !== id);
+        store.own = store.own.filter(o => o.fromSpendId !== id);
+        saveStore();
+        renderAll();
+      }
+    });
+  });
 }
 
 let ownCatFilter = 'all';
@@ -2102,9 +2548,15 @@ function renderOwn() {
           <span style="color:var(--ink-faint)">${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} 등록</span>
         </div>
       </div>
-      <button class="icon-btn act-remove-own" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      <div class="item-actions">
+        <button class="icon-btn act-edit-own" title="수정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button class="icon-btn act-remove-own" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </div>
     </div>`;
   }).join('');
+  wrap.querySelectorAll('.act-edit-own').forEach(btn => {
+    btn.addEventListener('click', e => { e.stopPropagation(); editOwn(btn.closest('.purchase-item').dataset.id); });
+  });
   wrap.querySelectorAll('.act-remove-own').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -2160,6 +2612,18 @@ function renderSettings() {
 
 // initialize store now that all helpers (DEFAULT_CATEGORIES, migrate, defaultStore) exist
 store = loadStore();
+
+// calendar month navigation
+document.getElementById('calPrev').addEventListener('click', () => {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() - 1, 1);
+  calSelectedKey = null;
+  renderCalendar();
+});
+document.getElementById('calNext').addEventListener('click', () => {
+  calViewDate = new Date(calViewDate.getFullYear(), calViewDate.getMonth() + 1, 1);
+  calSelectedKey = null;
+  renderCalendar();
+});
 
 renderAll();
 setInterval(renderHome, 30000);
