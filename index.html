@@ -212,6 +212,73 @@ body {
   font-weight: 500;
 }
 
+/* WEEKLY REVIEW */
+.week-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.week-headline {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.week-total {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.week-total .unit { font-size: 14px; font-weight: 500; color: var(--ink-soft); margin-left: 2px; }
+.week-count { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+.week-compare {
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.week-compare.up { color: var(--warn); }
+.week-compare.down { color: var(--good); }
+.week-compare.same { color: var(--ink-faint); }
+.week-mini-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.week-mini {
+  text-align: center;
+}
+.week-mini-val {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.week-mini-val.good { color: var(--good); }
+.week-mini-val.warn { color: var(--warn); }
+.week-mini-label {
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+  font-weight: 500;
+}
+.week-note {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-soft);
+}
+.week-note-msg {
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  font-weight: 500;
+}
+.week-note-msg .accent-good { color: var(--good); font-weight: 700; }
+.week-note-msg .accent-warn { color: var(--warn); font-weight: 700; }
+
 /* CALENDAR */
 .calendar-card {
   background: var(--bg-card);
@@ -1076,6 +1143,12 @@ body {
     </div>
   </div>
 
+  <div class="section-title">
+    이번 주 돌아보기
+    <span class="meta" id="weekRange">—</span>
+  </div>
+  <div id="weekReview"></div>
+
   <div class="section-title" id="calTitle">
     소비 달력
     <span class="meta" id="noSpendMeta">무지출 0일</span>
@@ -1346,6 +1419,10 @@ body {
     <div class="field">
       <label class="field-label">카테고리</label>
       <select class="select" id="ownCat"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">구매한 날 (선택)</label>
+      <input class="input" id="ownDate" type="date">
     </div>
     <div class="field">
       <label class="field-label">사진 (선택)</label>
@@ -1713,6 +1790,7 @@ function resetModalForm(id) {
     editingOwnId = null;
     document.getElementById('ownName').value = '';
     document.getElementById('ownEmoji').value = '';
+    document.getElementById('ownDate').value = '';
     removePhoto('ownPhoto');
     document.querySelector('#modalOwn .modal-title').textContent = '가진 물건 등록';
     document.querySelector('#modalOwn .btn:not(.btn-ghost)').textContent = '등록하기';
@@ -1817,23 +1895,36 @@ function saveOwn() {
   const name = document.getElementById('ownName').value.trim();
   const cat = document.getElementById('ownCat').value;
   const emoji = document.getElementById('ownEmoji').value.trim() || categoryEmoji(cat);
+  const dateVal = document.getElementById('ownDate').value; // 'YYYY-MM-DD' or ''
   if (!name) { alert('이름을 적어주세요'); return; }
   if (editingOwnId) {
     const o = store.own.find(x => x.id === editingOwnId);
     if (o) {
       o.name = name; o.cat = cat; o.emoji = emoji;
+      if (dateVal) o.createdAt = dateInputToTs(dateVal);
       if (tempPhotos.ownPhoto !== undefined) o.photo = tempPhotos.ownPhoto;
     }
   } else {
     store.own.push({
       id: uid(), name, cat, emoji,
       photo: tempPhotos.ownPhoto,
-      createdAt: Date.now(),
+      createdAt: dateVal ? dateInputToTs(dateVal) : Date.now(),
     });
   }
   saveStore();
   closeModal('modalOwn');
   renderAll();
+}
+
+// 'YYYY-MM-DD' -> local timestamp at noon (avoids timezone day-shift)
+function dateInputToTs(v) {
+  const [y, m, d] = v.split('-').map(Number);
+  return new Date(y, m - 1, d, 12, 0, 0).getTime();
+}
+// timestamp -> 'YYYY-MM-DD' for date input value
+function tsToDateInput(ts) {
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
 
 // open modals in EDIT mode, pre-filling fields
@@ -1883,6 +1974,7 @@ function editOwn(id) {
   refreshCategorySelects();
   document.getElementById('ownName').value = o.name || '';
   document.getElementById('ownCat').value = o.cat;
+  document.getElementById('ownDate').value = o.createdAt ? tsToDateInput(o.createdAt) : '';
   document.getElementById('ownEmoji').value = (o.photo ? '' : (o.emoji || ''));
   tempPhotos.ownPhoto = o.photo || null;
   const wrap = document.getElementById('ownPhotoWrap');
@@ -2166,6 +2258,124 @@ function renderHome() {
   }
 
   renderCalendar();
+  renderWeekReview();
+}
+
+// ===== WEEKLY REVIEW =====
+// returns {start, end} timestamps for the week (Mon 00:00 ~ next Mon 00:00) containing ts
+function weekBounds(ts) {
+  const d = new Date(ts);
+  d.setHours(0, 0, 0, 0);
+  const dow = d.getDay();              // 0=Sun..6=Sat
+  const offsetToMon = (dow + 6) % 7;   // days since Monday
+  const start = new Date(d);
+  start.setDate(d.getDate() - offsetToMon);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7);
+  return { start: start.getTime(), end: end.getTime() };
+}
+
+function renderWeekReview() {
+  const box = document.getElementById('weekReview');
+  if (!box) return;
+  const now = Date.now();
+  const thisWeek = weekBounds(now);
+  const lastWeek = weekBounds(thisWeek.start - 1); // a moment before this week's start
+
+  const inRange = (ts, r) => ts >= r.start && ts < r.end;
+
+  const thisSpends = store.spend.filter(s => inRange(s.createdAt, thisWeek));
+  const lastSpends = store.spend.filter(s => inRange(s.createdAt, lastWeek));
+
+  const thisTotal = thisSpends.reduce((a, b) => a + (b.price || 0), 0);
+  const lastTotal = lastSpends.reduce((a, b) => a + (b.price || 0), 0);
+  const thisCount = thisSpends.length;
+
+  // week range label e.g. "5.25 – 5.31"
+  const s = new Date(thisWeek.start);
+  const e = new Date(thisWeek.end - 1);
+  document.getElementById('weekRange').textContent =
+    `${s.getMonth()+1}.${s.getDate()} – ${e.getMonth()+1}.${e.getDate()}`;
+
+  // no-spend days this week (only counting days from earliest record up to today)
+  let earliest = null;
+  store.spend.forEach(x => { if (earliest == null || x.createdAt < earliest) earliest = x.createdAt; });
+  const todayMid = new Date(); todayMid.setHours(0,0,0,0);
+  const spendDayKeys = new Set(thisSpends.map(x => {
+    const d = new Date(x.createdAt);
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }));
+  let noSpendDays = 0;
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(thisWeek.start);
+    day.setDate(day.getDate() + i);
+    day.setHours(0,0,0,0);
+    if (day.getTime() > todayMid.getTime()) continue;       // future day
+    if (earliest != null && day.getTime() < new Date(new Date(earliest).setHours(0,0,0,0)).getTime()) continue; // before tracking
+    if (earliest == null) continue;
+    const k = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+    if (!spendDayKeys.has(k)) noSpendDays++;
+  }
+
+  // impulse + regret counts this week
+  const impulseCount = thisSpends.filter(x => x.emotion === 'impulse').length;
+  const regretCount = thisSpends.filter(x => x.regret === 2).length;
+
+  // wishes resisted this week — approximated by savedTotal isn't time-bound, so count current wishes still cooling
+  const coolingWishes = store.wish.length;
+
+  // comparison vs last week
+  let compareHTML = '';
+  if (lastSpends.length === 0 && thisCount === 0) {
+    compareHTML = `<div class="week-compare same">지난주에도 이번 주에도 아직 기록이 없어요</div>`;
+  } else if (lastTotal === 0) {
+    compareHTML = `<div class="week-compare same">지난주 대비 비교는 다음 주부터 보여요</div>`;
+  } else {
+    const diff = thisTotal - lastTotal;
+    const pct = Math.round(Math.abs(diff) / lastTotal * 100);
+    if (diff > 0) compareHTML = `<div class="week-compare up">지난주보다 ${fmt(diff)}원 (${pct}%) 더 썼어요</div>`;
+    else if (diff < 0) compareHTML = `<div class="week-compare down">지난주보다 ${fmt(-diff)}원 (${pct}%) 아꼈어요</div>`;
+    else compareHTML = `<div class="week-compare same">지난주와 똑같이 썼어요</div>`;
+  }
+
+  // a gentle reflective message
+  let msg;
+  if (thisCount === 0) {
+    msg = `이번 주는 아직 소비 기록이 없어요. <span class="accent-good">무지출의 한 주</span>가 될 수도 있겠네요.`;
+  } else if (regretCount > 0) {
+    msg = `이번 주 <span class="accent-warn">후회한 소비 ${regretCount}건</span>이 있었어요. 무엇이 아쉬웠는지 잠깐 떠올려볼까요?`;
+  } else if (impulseCount >= 3) {
+    msg = `충동구매가 <span class="accent-warn">${impulseCount}건</span>이었어요. 다음 주엔 위시에 먼저 담아보는 건 어때요?`;
+  } else if (noSpendDays >= 3) {
+    msg = `무지출 <span class="accent-good">${noSpendDays}일</span>, 잘 보냈어요. 이 리듬을 다음 주에도 이어가봐요.`;
+  } else {
+    msg = `이번 주는 비교적 차분한 한 주였어요. 충동구매 없이 ${thisCount}건을 기록했네요.`;
+  }
+
+  box.innerHTML = `<div class="week-card">
+    <div class="week-headline">
+      <div class="week-total">${fmt(thisTotal)}<span class="unit">원</span></div>
+      <div class="week-count">${thisCount}건</div>
+    </div>
+    ${compareHTML}
+    <div class="week-mini-grid">
+      <div class="week-mini">
+        <div class="week-mini-val ${noSpendDays >= 3 ? 'good' : ''}">${noSpendDays}일</div>
+        <div class="week-mini-label">무지출</div>
+      </div>
+      <div class="week-mini">
+        <div class="week-mini-val ${impulseCount > 0 ? 'warn' : ''}">${impulseCount}건</div>
+        <div class="week-mini-label">충동구매</div>
+      </div>
+      <div class="week-mini">
+        <div class="week-mini-val">${coolingWishes}개</div>
+        <div class="week-mini-label">묵히는 위시</div>
+      </div>
+    </div>
+    <div class="week-note">
+      <div class="week-note-msg">${msg}</div>
+    </div>
+  </div>`;
 }
 
 // ===== CALENDAR =====
@@ -2545,7 +2755,7 @@ function renderOwn() {
         <div class="purchase-meta">
           <span class="tag" style="background:${hexToRgba(cc,0.14)};color:${cc}">${escapeHTML(o.cat)}</span>
           ${isUnused ? `<span class="tag unused">${months}개월째</span>` : ''}
-          <span style="color:var(--ink-faint)">${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} 등록</span>
+          <span style="color:var(--ink-faint)">${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}</span>
         </div>
       </div>
       <div class="item-actions">
