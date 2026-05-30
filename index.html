@@ -1388,6 +1388,10 @@ body {
       <select class="select" id="spendCat"></select>
     </div>
     <div class="field">
+      <label class="field-label">언제 샀나요?</label>
+      <input class="input" id="spendDate" type="date">
+    </div>
+    <div class="field">
       <label class="field-label">왜 샀나요?</label>
       <div class="chip-group" id="spendEmotionChips">
         <div class="chip" data-emo="need">필요해서</div>
@@ -1780,6 +1784,7 @@ function resetModalForm(id) {
     document.getElementById('spendName').value = '';
     document.getElementById('spendPrice').value = '';
     document.getElementById('spendNote').value = '';
+    document.getElementById('spendDate').value = '';
     document.querySelectorAll('#spendEmotionChips .chip').forEach(c => c.classList.remove('active'));
     removePhoto('spendPhoto');
     document.querySelector('#modalSpend .modal-title').textContent = '방금 산 것을 기록';
@@ -1859,6 +1864,7 @@ function saveSpend() {
   const price = +document.getElementById('spendPrice').value || 0;
   const cat = document.getElementById('spendCat').value;
   const note = document.getElementById('spendNote').value.trim();
+  const dateVal = document.getElementById('spendDate').value; // 'YYYY-MM-DD' or ''
   const emoChip = document.querySelector('#spendEmotionChips .chip.active');
   const emotion = emoChip ? emoChip.dataset.emo : 'need';
   if (!name) { alert('이름을 적어주세요'); return; }
@@ -1866,24 +1872,30 @@ function saveSpend() {
     const s = store.spend.find(x => x.id === editingSpendId);
     if (s) {
       s.name = name; s.price = price; s.cat = cat; s.note = note; s.emotion = emotion;
+      if (dateVal) s.createdAt = dateInputToTs(dateVal);
       // photo: keep existing unless a new one was chosen, or it was removed
       if (tempPhotos.spendPhoto !== undefined) s.photo = tempPhotos.spendPhoto;
-      // keep the linked inventory item's name/category in sync
+      // keep the linked inventory item's name/category/date in sync
       const linked = store.own.find(o => o.fromSpendId === editingSpendId);
-      if (linked) { linked.name = name; linked.cat = cat; if (!linked.photo) linked.emoji = categoryEmoji(cat); }
+      if (linked) {
+        linked.name = name; linked.cat = cat;
+        if (!linked.photo) linked.emoji = categoryEmoji(cat);
+        if (dateVal) linked.createdAt = s.createdAt;
+      }
     }
   } else {
+    const ts = dateVal ? dateInputToTs(dateVal) : Date.now();
     const spendId = uid();
     store.spend.push({
       id: spendId, name, price, cat, note, emotion,
-      photo: tempPhotos.spendPhoto, createdAt: Date.now(), regret: null,
+      photo: tempPhotos.spendPhoto, createdAt: ts, regret: null,
     });
     store.own.push({
       id: uid(), name, cat,
       emoji: categoryEmoji(cat),
       photo: null,
       fromSpendId: spendId,
-      createdAt: Date.now(),
+      createdAt: ts,
     });
   }
   saveStore();
@@ -1950,6 +1962,7 @@ function editSpend(id) {
   document.getElementById('spendName').value = s.name || '';
   document.getElementById('spendPrice').value = s.price || '';
   document.getElementById('spendCat').value = s.cat;
+  document.getElementById('spendDate').value = s.createdAt ? tsToDateInput(s.createdAt) : '';
   document.getElementById('spendNote').value = s.note || '';
   document.querySelectorAll('#spendEmotionChips .chip').forEach(c =>
     c.classList.toggle('active', c.dataset.emo === s.emotion));
