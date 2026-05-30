@@ -1,0 +1,2168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
+<title>잠깐 — 소비 일지</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+:root {
+  --bg: #ffffff;
+  --bg-card: #ffffff;
+  --bg-soft: #fafafa;
+  --bg-elevated: #ffffff;
+  --ink: #111111;
+  --ink-soft: #555555;
+  --ink-faint: #999999;
+  --line: #ececec;
+  --line-soft: #f4f4f4;
+  --accent: #111111;
+  --accent-soft: #f4f4f4;
+  --warn: #c4452d;
+  --warn-soft: #fdecec;
+  --good: #2d7a4f;
+  --good-soft: #e8f3ec;
+  --regret-0: #d3e8d8;
+  --regret-1: #f1e9d0;
+  --regret-2: #f4d3cb;
+  --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 2px 12px rgba(0, 0, 0, 0.04);
+  --font: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  letter-spacing: -0.01em;
+}
+
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 80px;
+  position: relative;
+  background: var(--bg);
+}
+
+/* HEADER */
+.app-header {
+  padding: 26px 20px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+.app-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.app-date {
+  font-size: 12px;
+  color: var(--ink-faint);
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+.header-action {
+  background: none;
+  border: none;
+  padding: 6px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TAB NAV */
+.tab-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  z-index: 100;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 8px 4px;
+  font-family: var(--font);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: color 0.2s;
+  letter-spacing: -0.01em;
+}
+.tab-btn .icon {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+}
+.tab-btn.active { color: var(--ink); font-weight: 600; }
+.tab-btn.active .icon svg { stroke: var(--ink); }
+
+/* PAGE */
+.page { display: none; padding: 0 20px; }
+.page.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin: 24px 0 12px;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.section-title .meta {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-faint);
+}
+
+/* HOME — quote */
+.daily-quote {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ink);
+  padding: 22px 20px;
+  background: var(--bg-soft);
+  margin: 8px 0 20px;
+  border-radius: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.daily-quote .cite {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 10px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* STATS */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 14px 16px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: 0;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+}
+.stat-value .unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  margin-left: 2px;
+  letter-spacing: -0.01em;
+}
+.stat-sub {
+  font-size: 11px;
+  color: var(--ink-soft);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* BUDGET CARD */
+.budget-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.budget-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.budget-cat {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.02em;
+}
+.budget-amount {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.budget-amount .used {
+  font-weight: 700;
+  color: var(--ink);
+}
+.budget-amount.over .used { color: var(--warn); }
+.budget-track {
+  height: 6px;
+  background: var(--line-soft);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.budget-fill {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 3px;
+  transition: width 0.4s;
+}
+.budget-fill.warn { background: #d4a017; }
+.budget-fill.over { background: var(--warn); }
+.budget-row-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.budget-mini-btn {
+  font-size: 11px;
+  color: var(--ink-faint);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font);
+}
+
+/* WISHLIST */
+.wish-item {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.wish-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+  color: var(--ink);
+  padding-right: 70px;
+  letter-spacing: -0.02em;
+}
+.wish-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  align-items: center;
+  font-weight: 500;
+}
+.wish-price {
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.cooldown-bar {
+  margin-top: 10px;
+  height: 4px;
+  background: var(--line-soft);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.cooldown-fill {
+  height: 100%;
+  background: var(--ink);
+  transition: width 0.4s;
+}
+.cooldown-label {
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 500;
+}
+.cooldown-label .ready {
+  color: var(--good);
+  font-weight: 600;
+}
+.wish-actions {
+  display: flex;
+  gap: 6px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.icon-btn {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.15s;
+}
+.icon-btn:active { transform: scale(0.9); background: var(--line-soft); }
+.icon-btn svg { width: 14px; height: 14px; }
+.wish-reason {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  line-height: 1.55;
+}
+
+/* PURCHASE / INVENTORY */
+.purchase-item {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.purchase-emoji {
+  font-size: 20px;
+  width: 40px; height: 40px;
+  background: var(--bg-soft);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.purchase-emoji img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.purchase-body { flex: 1; min-width: 0; }
+.purchase-name {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+.purchase-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  align-items: center;
+  flex-wrap: wrap;
+  font-weight: 500;
+}
+.purchase-price {
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.regret-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.regret-0 { background: var(--regret-0); }
+.regret-1 { background: var(--regret-1); }
+.regret-2 { background: var(--regret-2); }
+.tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--line-soft);
+  color: var(--ink-soft);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.tag.emotion-impulse { background: var(--warn-soft); color: var(--warn); }
+.tag.emotion-need { background: var(--good-soft); color: var(--good); }
+.tag.emotion-stress { background: #f0e6f3; color: #6b4380; }
+.tag.emotion-sale { background: #e3edf6; color: #3d5a7a; }
+.tag.unused { background: #fff4d6; color: #9a6a00; }
+
+/* FAB */
+.fab {
+  position: fixed;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  right: 50%;
+  transform: translateX(min(220px, 50vw));
+  margin-right: 16px;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  font-size: 26px;
+  font-weight: 300;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  z-index: 50;
+  transition: transform 0.15s;
+}
+.fab:active { transform: translateX(min(220px, 50vw)) scale(0.94); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--bg);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease-out;
+}
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+.modal-handle {
+  width: 36px; height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.modal-title {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: -0.03em;
+}
+.modal-subtitle {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+/* FORM */
+.field { margin-bottom: 16px; }
+.field-label {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.input, .textarea, .select {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: var(--font);
+  font-size: 15px;
+  color: var(--ink);
+  transition: border-color 0.15s;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.input:focus, .textarea:focus, .select:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+.textarea { resize: vertical; min-height: 70px; }
+.select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='none' stroke='%23555' stroke-width='1.5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+.chip-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg);
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.chip.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  font-weight: 600;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.15s;
+  letter-spacing: -0.02em;
+}
+.btn:active { opacity: 0.85; }
+.btn-ghost {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.btn-danger { background: var(--warn); }
+
+/* PHOTO upload */
+.photo-upload {
+  border: 1.5px dashed var(--line);
+  border-radius: 10px;
+  padding: 24px 12px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--ink-faint);
+  font-size: 13px;
+  background: var(--bg-soft);
+  transition: all 0.15s;
+  font-weight: 500;
+}
+.photo-upload:active { background: var(--line-soft); }
+.photo-preview {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+.photo-preview img {
+  width: 100%;
+  display: block;
+  max-height: 240px;
+  object-fit: contain;
+}
+.photo-remove {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px; height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* CHECKLIST */
+.check-list { list-style: none; padding: 0; margin: 16px 0 20px; }
+.check-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+.check-item:last-child { border-bottom: none; }
+.check-num {
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 14px;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+/* EMPTY */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--ink-faint);
+}
+.empty .empty-emoji {
+  font-size: 32px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+.empty p {
+  font-size: 13px;
+  margin: 4px 0;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* INSIGHT */
+.insight-block { margin-bottom: 24px; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 60px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.bar-track {
+  height: 8px;
+  background: var(--line-soft);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 4px;
+  transition: width 0.5s;
+}
+.bar-fill.regret { background: var(--warn); }
+.bar-value {
+  text-align: right;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.02em;
+}
+
+/* search */
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-input {
+  width: 100%;
+  padding: 11px 14px 11px 38px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+}
+.search-input:focus { outline: none; border-color: var(--ink); background: var(--bg); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink-faint); }
+
+/* filter chips row */
+.filter-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.filter-chip {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--bg);
+  font-size: 12px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.filter-chip.active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+  font-weight: 600;
+}
+
+/* duplicate warning */
+.dup-warn {
+  background: var(--warn-soft);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--warn);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.helper-text {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin: -8px 0 14px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+
+/* settings page */
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-label { font-size: 14px; font-weight: 500; letter-spacing: -0.01em; }
+.setting-sub { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+.setting-action { color: var(--ink-faint); font-size: 18px; }
+
+/* unused alert */
+.unused-card {
+  background: #fff8e6;
+  border: 1px solid #f0e0a8;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: #6b5100;
+  font-weight: 500;
+}
+.unused-card .head {
+  font-weight: 700;
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+/* receipt thumbnail in spend item */
+.receipt-thumb {
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 120px;
+  cursor: pointer;
+}
+.receipt-thumb img { width: 100%; display: block; }
+
+/* category manage */
+.cat-manage-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: var(--bg);
+}
+.cat-dot {
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.cat-manage-info { flex: 1; min-width: 0; }
+.cat-manage-name { font-weight: 600; font-size: 14px; letter-spacing: -0.02em; }
+.cat-manage-budget { font-size: 11px; color: var(--ink-faint); margin-top: 1px; font-weight: 500; }
+.cat-manage-actions { display: flex; gap: 4px; align-items: center; flex-shrink: 0; }
+.cat-order-btns { display: flex; flex-direction: column; gap: 2px; margin-right: 2px; }
+.cat-order-btn {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  width: 22px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--ink-soft);
+  padding: 0;
+}
+.cat-order-btn:disabled { opacity: 0.3; cursor: default; }
+.cat-order-btn svg { width: 11px; height: 11px; }
+.cat-mini {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--ink-soft);
+}
+.cat-mini svg { width: 15px; height: 15px; }
+.cat-mini.danger { color: var(--warn); }
+
+/* color palette */
+.palette-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.swatch {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.1s;
+}
+.swatch:active { transform: scale(0.9); }
+.swatch.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); }
+.color-native {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* full image viewer */
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.image-viewer.active { display: flex; }
+.image-viewer img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.image-viewer-close {
+  position: absolute;
+  top: 20px; right: 20px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  font-size: 18px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <div class="app-title">잠깐,</div>
+    <div class="app-date" id="todayDate">—</div>
+  </div>
+  <button class="header-action" onclick="switchTab('settings')" aria-label="설정">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</header>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="daily-quote">
+    필요한 것과 원하는 것 사이에는<br>하룻밤의 거리가 있다.
+    <span class="cite">— 오늘의 기록</span>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-label">이번 달 소비</div>
+      <div class="stat-value" id="statSpent">0<span class="unit">원</span></div>
+      <div class="stat-sub" id="statSpentSub">기록을 시작해보세요</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">담아둔 위시</div>
+      <div class="stat-value" id="statWish">0<span class="unit">개</span></div>
+      <div class="stat-sub" id="statWishSub">묵혀두는 중</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">가진 물건</div>
+      <div class="stat-value" id="statOwn">0<span class="unit">개</span></div>
+      <div class="stat-sub">인벤토리</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">후회 점수</div>
+      <div class="stat-value" id="statRegret">—</div>
+      <div class="stat-sub">최근 10건 평균</div>
+    </div>
+  </div>
+
+  <div id="unusedAlert"></div>
+
+  <div class="section-title">
+    이번 달 예산
+    <span class="meta" onclick="openModal('modalBudget')" style="cursor:pointer;color:var(--ink-soft)">관리</span>
+  </div>
+  <div id="budgetList"></div>
+
+  <div class="section-title">
+    곧 결정해야 할 것
+    <span class="meta">쿨다운 완료</span>
+  </div>
+  <div id="readyWishList"></div>
+</div>
+
+<!-- WISHLIST -->
+<div class="page" id="page-wish">
+  <h2 class="section-title" style="margin-top:8px">위시리스트<span class="meta" id="wishCount">0개</span></h2>
+  <p class="helper-text">사고 싶은 게 떠오르면 일단 여기에. 정한 만큼의 시간을 기다린 뒤에도 원하면, 그때 사세요.</p>
+  <div id="wishList"></div>
+</div>
+
+<!-- PURCHASES -->
+<div class="page" id="page-spend">
+  <h2 class="section-title" style="margin-top:8px">소비 일지<span class="meta" id="spendCount">0건</span></h2>
+  <p class="helper-text">왜 샀는지, 그때 기분이 어땠는지 — 며칠 뒤 다시 보면 자신의 패턴이 보입니다.</p>
+  <div class="filter-row" id="spendFilter">
+    <div class="filter-chip active" data-filter="all">전체</div>
+    <div class="filter-chip" data-filter="impulse">충동</div>
+    <div class="filter-chip" data-filter="need">필요</div>
+    <div class="filter-chip" data-filter="stress">스트레스</div>
+    <div class="filter-chip" data-filter="sale">할인</div>
+    <div class="filter-chip" data-filter="regret">후회만</div>
+  </div>
+  <div id="spendList"></div>
+</div>
+
+<!-- INVENTORY -->
+<div class="page" id="page-own">
+  <h2 class="section-title" style="margin-top:8px">내 물건<span class="meta" id="ownCount">0개</span></h2>
+  <p class="helper-text">이미 가진 걸 잊지 않게. 안 쓰는 물건은 따로 알려드려요.</p>
+  <div class="search-wrap">
+    <span class="search-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/></svg>
+    </span>
+    <input class="search-input" id="ownSearch" placeholder="물건 검색...">
+  </div>
+  <div class="filter-row" id="ownFilter">
+    <div class="filter-chip active" data-cat="all">전체</div>
+    <div class="filter-chip" data-cat="unused">안 쓰는 것</div>
+  </div>
+  <div id="ownList"></div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="page" id="page-insight">
+  <h2 class="section-title" style="margin-top:8px">돌아보기</h2>
+  <p class="helper-text">데이터가 쌓이면, 자신이 어떤 사람인지 보이기 시작합니다.</p>
+
+  <div class="card insight-block">
+    <div class="field-label">이번 달 감정별 소비</div>
+    <div id="emotionBreakdown" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card insight-block">
+    <div class="field-label">가장 후회한 카테고리</div>
+    <div id="regretByCategory" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card insight-block">
+    <div class="field-label">쿨다운으로 절약한 돈</div>
+    <div class="stat-value" id="savedAmount" style="margin-top:6px">0<span class="unit">원</span></div>
+    <div class="stat-sub" id="savedSub" style="margin-top:6px">위시에 담았다가 포기한 합계입니다.</div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <h2 class="section-title" style="margin-top:8px">설정</h2>
+
+  <div class="card" style="padding: 4px 16px">
+    <div class="setting-row" onclick="exportData()">
+      <div>
+        <div class="setting-label">데이터 백업</div>
+        <div class="setting-sub">JSON 파일로 내보내기</div>
+      </div>
+      <span class="setting-action">↓</span>
+    </div>
+    <div class="setting-row" onclick="document.getElementById('importInput').click()">
+      <div>
+        <div class="setting-label">데이터 복원</div>
+        <div class="setting-sub">JSON 파일에서 가져오기</div>
+      </div>
+      <span class="setting-action">↑</span>
+    </div>
+    <input type="file" id="importInput" accept="application/json,.json" style="display:none" onchange="importData(event)">
+    <div class="setting-row" onclick="openModal('modalBudget')">
+      <div>
+        <div class="setting-label">카테고리 · 예산 관리</div>
+        <div class="setting-sub" id="budgetCountSub">카테고리별 한도</div>
+      </div>
+      <span class="setting-action">›</span>
+    </div>
+    <div class="setting-row" onclick="openModal('modalUnusedThreshold')">
+      <div>
+        <div class="setting-label">안 쓰는 물건 기준</div>
+        <div class="setting-sub" id="unusedThresholdSub">3개월</div>
+      </div>
+      <span class="setting-action">›</span>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 4px 16px; margin-top: 14px">
+    <div class="setting-row" onclick="resetAll()">
+      <div>
+        <div class="setting-label" style="color:var(--warn)">전체 데이터 삭제</div>
+        <div class="setting-sub">되돌릴 수 없어요</div>
+      </div>
+      <span class="setting-action" style="color:var(--warn)">⌫</span>
+    </div>
+  </div>
+
+  <p class="helper-text" style="margin-top:24px; text-align:center">
+    모든 데이터는 이 기기 안에만 저장됩니다.<br>
+    폰을 바꾸거나 브라우저를 지우면 사라지니<br>
+    가끔 백업해두세요.
+  </p>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" aria-label="추가">+</button>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <button class="tab-btn active" data-page="home">
+    <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10.5 12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg></span>
+    오늘
+  </button>
+  <button class="tab-btn" data-page="wish">
+    <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M19 14c1.5-1.5 3-3.3 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z"/></svg></span>
+    위시
+  </button>
+  <button class="tab-btn" data-page="spend">
+    <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></span>
+    소비
+  </button>
+  <button class="tab-btn" data-page="own">
+    <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg></span>
+    물건
+  </button>
+  <button class="tab-btn" data-page="insight">
+    <span class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 20h18M5 20V10M11 20V4M17 20v-7"/></svg></span>
+    분석
+  </button>
+</nav>
+
+<!-- MODAL: 메뉴 선택 -->
+<div class="modal-overlay" id="modalChoose">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">무엇을 기록할까요?</div>
+    <div class="modal-subtitle">충동이 올라올 땐 위시에 담아두고, 이미 샀다면 소비 일지에.</div>
+    <button class="btn btn-ghost" style="text-align:left; padding-left:20px" onclick="openModal('modalWish'); closeModal('modalChoose')">
+      <strong>위시리스트에 담기</strong><br><span style="font-size:12px; color:var(--ink-faint); font-weight:500">사기 전에 며칠 묵혀두기</span>
+    </button>
+    <button class="btn btn-ghost" style="text-align:left; padding-left:20px; margin-top:10px" onclick="openModal('modalSpend'); closeModal('modalChoose')">
+      <strong>이미 산 것 기록하기</strong><br><span style="font-size:12px; color:var(--ink-faint); font-weight:500">소비 일지 + 인벤토리</span>
+    </button>
+    <button class="btn btn-ghost" style="text-align:left; padding-left:20px; margin-top:10px" onclick="openModal('modalOwn'); closeModal('modalChoose')">
+      <strong>이미 가진 물건 등록</strong><br><span style="font-size:12px; color:var(--ink-faint); font-weight:500">인벤토리에만 추가</span>
+    </button>
+    <button class="btn" style="background:transparent; color:var(--ink-soft); margin-top:8px" onclick="closeModal('modalChoose')">취소</button>
+  </div>
+</div>
+
+<!-- MODAL: 위시리스트 추가 -->
+<div class="modal-overlay" id="modalWish">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">위시리스트에 담기</div>
+    <div class="modal-subtitle">잠깐 — 정말 필요한 건지 며칠 두고 생각해봐요.</div>
+    <div id="dupWarnWish"></div>
+    <div class="field"><label class="field-label">무엇을 사고 싶나요?</label><input class="input" id="wishName" placeholder="예: 무선 이어폰"></div>
+    <div class="field"><label class="field-label">예상 가격</label><input class="input" id="wishPrice" type="number" inputmode="numeric" placeholder="예: 89000"></div>
+    <div class="field"><label class="field-label">왜 갖고 싶나요?</label><textarea class="textarea" id="wishReason" placeholder="지금 이 충동의 이유를 써두세요"></textarea></div>
+    <div class="field">
+      <label class="field-label">묵혀둘 기간</label>
+      <div class="chip-group" id="wishCooldownChips">
+        <div class="chip" data-days="1">1일</div>
+        <div class="chip active" data-days="3">3일</div>
+        <div class="chip" data-days="7">7일</div>
+        <div class="chip" data-days="14">14일</div>
+        <div class="chip" data-days="30">30일</div>
+      </div>
+    </div>
+    <button class="btn" onclick="saveWish()">담아두기</button>
+    <button class="btn btn-ghost" onclick="closeModal('modalWish')">취소</button>
+  </div>
+</div>
+
+<!-- MODAL: 소비 일지 -->
+<div class="modal-overlay" id="modalSpend">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">방금 산 것을 기록</div>
+    <div class="modal-subtitle">자세히 쓸수록 패턴이 보입니다. 인벤토리에도 같이 들어가요.</div>
+    <div class="field"><label class="field-label">무엇을 샀나요?</label><input class="input" id="spendName" placeholder="예: 흰 셔츠"></div>
+    <div class="field"><label class="field-label">얼마였나요?</label><input class="input" id="spendPrice" type="number" inputmode="numeric" placeholder="예: 45000"></div>
+    <div class="field">
+      <label class="field-label">카테고리</label>
+      <select class="select" id="spendCat"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">왜 샀나요?</label>
+      <div class="chip-group" id="spendEmotionChips">
+        <div class="chip" data-emo="need">필요해서</div>
+        <div class="chip" data-emo="impulse">충동적으로</div>
+        <div class="chip" data-emo="stress">스트레스</div>
+        <div class="chip" data-emo="sale">할인이라</div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="field-label">영수증 사진 (선택)</label>
+      <input type="file" id="spendPhotoInput" accept="image/*" style="display:none" onchange="handlePhoto(event, 'spendPhoto')">
+      <div id="spendPhotoWrap">
+        <div class="photo-upload" onclick="document.getElementById('spendPhotoInput').click()">+ 영수증 또는 물건 사진 추가</div>
+      </div>
+    </div>
+    <div class="field"><label class="field-label">메모 (선택)</label><textarea class="textarea" id="spendNote" placeholder="기분, 상황, 망설였던 점..."></textarea></div>
+    <button class="btn" onclick="saveSpend()">기록하기</button>
+    <button class="btn btn-ghost" onclick="closeModal('modalSpend')">취소</button>
+  </div>
+</div>
+
+<!-- MODAL: 인벤토리 추가 -->
+<div class="modal-overlay" id="modalOwn">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">가진 물건 등록</div>
+    <div class="modal-subtitle">이미 갖고 있는 걸 적어두면 중복구매를 줄일 수 있어요.</div>
+    <div class="field"><label class="field-label">물건 이름</label><input class="input" id="ownName" placeholder="예: 검정 후드티"></div>
+    <div class="field">
+      <label class="field-label">카테고리</label>
+      <select class="select" id="ownCat"></select>
+    </div>
+    <div class="field">
+      <label class="field-label">사진 (선택)</label>
+      <input type="file" id="ownPhotoInput" accept="image/*" style="display:none" onchange="handlePhoto(event, 'ownPhoto')">
+      <div id="ownPhotoWrap">
+        <div class="photo-upload" onclick="document.getElementById('ownPhotoInput').click()">+ 물건 사진 추가</div>
+      </div>
+    </div>
+    <div class="field"><label class="field-label">이모지 (사진 없을 때)</label><input class="input" id="ownEmoji" placeholder="예: 👕" maxlength="2"></div>
+    <button class="btn" onclick="saveOwn()">등록하기</button>
+    <button class="btn btn-ghost" onclick="closeModal('modalOwn')">취소</button>
+  </div>
+</div>
+
+<!-- MODAL: 위시 구매 결정 -->
+<div class="modal-overlay" id="modalDecide">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">진짜 살 건가요?</div>
+    <div class="modal-subtitle" id="decideName">—</div>
+    <ol class="check-list">
+      <li class="check-item"><span class="check-num">1</span>이걸 사면 한 달 뒤에도 만족할까?</li>
+      <li class="check-item"><span class="check-num">2</span>비슷한 걸 이미 갖고 있지 않은가?</li>
+      <li class="check-item"><span class="check-num">3</span>이걸 살 돈으로 다른 게 더 필요하진 않나?</li>
+      <li class="check-item"><span class="check-num">4</span>지금 기분이 평소와 같은가? (피곤·스트레스·취해있지 않나)</li>
+    </ol>
+    <button class="btn" id="confirmBuyBtn">샀어요 — 소비 일지로</button>
+    <button class="btn btn-ghost" id="cancelBuyBtn">참았어요 — 절약 기록</button>
+    <button class="btn" style="background:transparent; color:var(--ink-soft)" onclick="closeModal('modalDecide')">나중에 결정</button>
+  </div>
+</div>
+
+<!-- MODAL: 후회 점수 -->
+<div class="modal-overlay" id="modalRegret">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">며칠 지났네요</div>
+    <div class="modal-subtitle" id="regretName">—</div>
+    <div class="field" style="margin-top:20px">
+      <label class="field-label">지금 이 소비를 다시 본다면?</label>
+      <div class="chip-group" id="regretChips">
+        <div class="chip" data-r="0">잘 샀다</div>
+        <div class="chip" data-r="1">그저 그렇다</div>
+        <div class="chip" data-r="2">후회된다</div>
+      </div>
+    </div>
+    <button class="btn" id="saveRegretBtn">기록</button>
+    <button class="btn btn-ghost" onclick="closeModal('modalRegret')">나중에</button>
+  </div>
+</div>
+
+<!-- MODAL: 예산 설정 -->
+<div class="modal-overlay" id="modalBudget">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">카테고리 관리</div>
+    <div class="modal-subtitle">이름·색·이모지·월 예산을 정하고, 순서를 바꿀 수 있어요. 예산은 80%를 넘으면 알려드려요.</div>
+
+    <div id="catManageList"></div>
+
+    <button class="btn btn-ghost" onclick="openCatEditor()" style="margin-top:4px">+ 카테고리 추가</button>
+    <button class="btn" onclick="closeModal('modalBudget')" style="margin-top:10px">완료</button>
+  </div>
+</div>
+
+<!-- MODAL: 카테고리 추가/수정 -->
+<div class="modal-overlay" id="modalCatEdit">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="catEditTitle">카테고리 추가</div>
+    <div class="modal-subtitle">색은 예산 바, 소비 태그, 물건 태그에 모두 반영돼요.</div>
+
+    <div class="field">
+      <label class="field-label">이름</label>
+      <input class="input" id="catName" placeholder="예: 취미">
+    </div>
+    <div class="field">
+      <label class="field-label">이모지</label>
+      <input class="input" id="catEmoji" placeholder="예: 🎨" maxlength="2">
+    </div>
+    <div class="field">
+      <label class="field-label">색</label>
+      <div class="palette-row" id="catPalette"></div>
+      <input type="color" id="catColor" class="color-native" value="#5b8def">
+    </div>
+    <div class="field">
+      <label class="field-label">월 예산 (0이면 한도 없음)</label>
+      <input class="input" id="catBudget" type="number" inputmode="numeric" placeholder="예: 100000">
+    </div>
+
+    <button class="btn" onclick="saveCategory()">저장</button>
+    <button class="btn btn-ghost" onclick="closeModal('modalCatEdit')">취소</button>
+  </div>
+</div>
+
+<!-- MODAL: 안 쓰는 물건 기준 -->
+<div class="modal-overlay" id="modalUnusedThreshold">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">안 쓰는 물건 기준</div>
+    <div class="modal-subtitle">등록한 지 이 기간이 지난 물건을 "안 쓰는 것"으로 분류해서 알려드려요.</div>
+    <div class="field">
+      <div class="chip-group" id="unusedThresholdChips">
+        <div class="chip" data-m="1">1개월</div>
+        <div class="chip" data-m="3">3개월</div>
+        <div class="chip" data-m="6">6개월</div>
+        <div class="chip" data-m="12">1년</div>
+      </div>
+    </div>
+    <button class="btn" onclick="saveUnusedThreshold()">저장</button>
+    <button class="btn btn-ghost" onclick="closeModal('modalUnusedThreshold')">취소</button>
+  </div>
+</div>
+
+<!-- IMAGE VIEWER -->
+<div class="image-viewer" id="imageViewer" onclick="closeImageViewer()">
+  <button class="image-viewer-close">×</button>
+  <img id="imageViewerImg">
+</div>
+
+<script>
+// ===== STATE =====
+const STORE_KEY = 'jamkkan_v2';
+let store = null;            // initialized after all helpers are defined (avoids TDZ)
+let tempPhotos = { spendPhoto: null, ownPhoto: null };
+
+const DEFAULT_CATEGORIES = [
+  { name: '옷',     emoji: '👕', color: '#5b8def', budget: 0 },
+  { name: '전자',   emoji: '🔌', color: '#8b5cf6', budget: 0 },
+  { name: '화장품', emoji: '🧴', color: '#ec4899', budget: 0 },
+  { name: '식품',   emoji: '🍞', color: '#f59e0b', budget: 0 },
+  { name: '책',     emoji: '📖', color: '#10b981', budget: 0 },
+  { name: '기타',   emoji: '📦', color: '#6b7280', budget: 0 },
+];
+const PALETTE = ['#111111','#5b8def','#8b5cf6','#ec4899','#ef4444','#f59e0b','#10b981','#14b8a6','#6b7280','#a16207'];
+
+function defaultStore() {
+  return {
+    wish: [], spend: [], own: [], savedTotal: 0,
+    categories: DEFAULT_CATEGORIES.map((c, i) => ({ ...c, order: i })),
+    settings: { unusedMonths: 3 },
+  };
+}
+
+function loadStore() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return migrate(parsed);
+    }
+  } catch(e) {
+    console.error('데이터 불러오기 실패, 기본값으로 시작합니다:', e);
+  }
+  return defaultStore();
+}
+
+// migrate older formats (budgets map -> categories array). Must never throw.
+function migrate(s) {
+  try {
+    if (!s || typeof s !== 'object') return defaultStore();
+    if (!Array.isArray(s.wish)) s.wish = [];
+    if (!Array.isArray(s.spend)) s.spend = [];
+    if (!Array.isArray(s.own)) s.own = [];
+    if (typeof s.savedTotal !== 'number') s.savedTotal = 0;
+    if (!s.settings || typeof s.settings !== 'object') s.settings = { unusedMonths: 3 };
+    if (s.settings.unusedMonths == null) s.settings.unusedMonths = 3;
+
+    if (!Array.isArray(s.categories)) {
+      const oldBudgets = (s.budgets && typeof s.budgets === 'object') ? s.budgets : {};
+      const usedNames = new Set();
+      s.spend.forEach(x => x && x.cat && usedNames.add(x.cat));
+      s.own.forEach(x => x && x.cat && usedNames.add(x.cat));
+      Object.keys(oldBudgets).forEach(n => usedNames.add(n));
+
+      const cats = DEFAULT_CATEGORIES.map((c, i) => ({
+        ...c, order: i, budget: oldBudgets[c.name] || 0
+      }));
+      const known = new Set(cats.map(c => c.name));
+      let order = cats.length;
+      usedNames.forEach(n => {
+        if (!known.has(n)) {
+          cats.push({ name: n, emoji: '📦', color: '#6b7280', budget: oldBudgets[n] || 0, order: order++ });
+        }
+      });
+      s.categories = cats;
+      delete s.budgets;
+    }
+    // ensure every category has needed fields + order
+    s.categories.forEach((c, i) => {
+      if (c.order == null) c.order = i;
+      if (!c.color) c.color = '#6b7280';
+      if (!c.emoji) c.emoji = '📦';
+      if (c.budget == null) c.budget = 0;
+    });
+    // guarantee at least one category
+    if (!s.categories.length) s.categories = defaultStore().categories;
+    return s;
+  } catch(e) {
+    console.error('마이그레이션 실패, 기본값으로 시작합니다:', e);
+    return defaultStore();
+  }
+}
+
+function getCategories() {
+  return [...store.categories].sort((a,b) => a.order - b.order);
+}
+function getCategory(name) {
+  return store.categories.find(c => c.name === name) || { name, emoji: '📦', color: '#6b7280', budget: 0 };
+}
+function saveStore() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(store));
+  } catch(e) {
+    alert('저장 용량이 가득 찼어요. 영수증 사진이 너무 많을 수 있어요. 백업 후 정리해주세요.');
+  }
+}
+
+// ===== UTIL =====
+function fmt(n) { if (!n) return '0'; return Number(n).toLocaleString('ko-KR'); }
+function dayDiff(from, to) { return Math.floor((to - from) / 86400000); }
+function monthDiff(from, to) { return Math.floor((to - from) / (86400000 * 30)); }
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function today() {
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  return `${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}. ${days[d.getDay()]}`;
+}
+function escapeHTML(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function similarName(a, b) {
+  a = a.toLowerCase().replace(/\s/g, '');
+  b = b.toLowerCase().replace(/\s/g, '');
+  if (!a || !b) return false;
+  if (a === b) return true;
+  if (a.length >= 2 && b.includes(a)) return true;
+  if (b.length >= 2 && a.includes(b)) return true;
+  return false;
+}
+function categoryEmoji(cat) {
+  return getCategory(cat).emoji || '📦';
+}
+function categoryColor(cat) {
+  return getCategory(cat).color || '#6b7280';
+}
+// hex -> rgba for soft tag backgrounds
+function hexToRgba(hex, a) {
+  hex = (hex||'#6b7280').replace('#','');
+  if (hex.length === 3) hex = hex.split('').map(x=>x+x).join('');
+  const r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// image resize via canvas — caps long side ~1000px to fit localStorage
+function resizeImage(file, maxSide = 1000, quality = 0.8) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > h && w > maxSide) { h = h * maxSide / w; w = maxSide; }
+        else if (h > maxSide) { w = w * maxSide / h; h = maxSide; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handlePhoto(event, target) {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    const dataUrl = await resizeImage(file);
+    tempPhotos[target] = dataUrl;
+    const wrap = document.getElementById(target === 'spendPhoto' ? 'spendPhotoWrap' : 'ownPhotoWrap');
+    wrap.innerHTML = `<div class="photo-preview">
+      <img src="${dataUrl}">
+      <button class="photo-remove" type="button" onclick="removePhoto('${target}')">×</button>
+    </div>`;
+  } catch(e) {
+    alert('사진을 불러올 수 없어요');
+  }
+}
+function removePhoto(target) {
+  tempPhotos[target] = null;
+  const inputId = target === 'spendPhoto' ? 'spendPhotoInput' : 'ownPhotoInput';
+  const wrapId = target === 'spendPhoto' ? 'spendPhotoWrap' : 'ownPhotoWrap';
+  document.getElementById(inputId).value = '';
+  const label = target === 'spendPhoto' ? '+ 영수증 또는 물건 사진 추가' : '+ 물건 사진 추가';
+  document.getElementById(wrapId).innerHTML = `<div class="photo-upload" onclick="document.getElementById('${inputId}').click()">${label}</div>`;
+}
+
+function openImageViewer(src) {
+  document.getElementById('imageViewerImg').src = src;
+  document.getElementById('imageViewer').classList.add('active');
+}
+function closeImageViewer() {
+  document.getElementById('imageViewer').classList.remove('active');
+}
+
+// ===== TABS =====
+function switchTab(page) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + page));
+  window.scrollTo(0, 0);
+  if (page === 'home') renderHome();
+  if (page === 'insight') renderInsights();
+  if (page === 'settings') renderSettings();
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.page));
+});
+
+// ===== MODAL =====
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  if (id === 'modalWish') document.getElementById('dupWarnWish').innerHTML = '';
+  if (id === 'modalBudget') renderCatManageList();
+  if (id === 'modalSpend' || id === 'modalOwn') refreshCategorySelects();
+  if (id === 'modalUnusedThreshold') {
+    document.querySelectorAll('#unusedThresholdChips .chip').forEach(c => {
+      c.classList.toggle('active', +c.dataset.m === store.settings.unusedMonths);
+    });
+  }
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  if (id === 'modalSpend') removePhoto('spendPhoto');
+  if (id === 'modalOwn') removePhoto('ownPhoto');
+}
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => {
+    if (e.target === o) {
+      o.classList.remove('active');
+      if (o.id === 'modalSpend') removePhoto('spendPhoto');
+      if (o.id === 'modalOwn') removePhoto('ownPhoto');
+    }
+  });
+});
+document.getElementById('fabBtn').addEventListener('click', () => openModal('modalChoose'));
+
+// ===== CHIPS =====
+function bindChips(containerId) {
+  const wrap = document.getElementById(containerId);
+  wrap.querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      wrap.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+}
+bindChips('wishCooldownChips');
+bindChips('spendEmotionChips');
+bindChips('regretChips');
+bindChips('unusedThresholdChips');
+
+// duplicate detection
+document.getElementById('wishName').addEventListener('input', e => {
+  const v = e.target.value.trim();
+  const box = document.getElementById('dupWarnWish');
+  if (!v) { box.innerHTML = ''; return; }
+  const matches = store.own.filter(o => similarName(o.name, v));
+  if (matches.length) {
+    box.innerHTML = `<div class="dup-warn"><span>⚠</span><span><strong>이미 가진 물건이 있어요</strong>: ${matches.map(m => m.name).join(', ')}</span></div>`;
+  } else box.innerHTML = '';
+});
+
+// ===== SAVE =====
+function saveWish() {
+  const name = document.getElementById('wishName').value.trim();
+  const price = +document.getElementById('wishPrice').value || 0;
+  const reason = document.getElementById('wishReason').value.trim();
+  const days = +document.querySelector('#wishCooldownChips .chip.active').dataset.days;
+  if (!name) { alert('이름을 적어주세요'); return; }
+  store.wish.push({ id: uid(), name, price, reason, days, createdAt: Date.now() });
+  saveStore();
+  closeModal('modalWish');
+  document.getElementById('wishName').value = '';
+  document.getElementById('wishPrice').value = '';
+  document.getElementById('wishReason').value = '';
+  renderAll();
+}
+
+function saveSpend() {
+  const name = document.getElementById('spendName').value.trim();
+  const price = +document.getElementById('spendPrice').value || 0;
+  const cat = document.getElementById('spendCat').value;
+  const note = document.getElementById('spendNote').value.trim();
+  const emoChip = document.querySelector('#spendEmotionChips .chip.active');
+  const emotion = emoChip ? emoChip.dataset.emo : 'need';
+  if (!name) { alert('이름을 적어주세요'); return; }
+  const spendId = uid();
+  const photo = tempPhotos.spendPhoto;
+  store.spend.push({
+    id: spendId, name, price, cat, note, emotion,
+    photo, createdAt: Date.now(), regret: null,
+  });
+  store.own.push({
+    id: uid(), name, cat,
+    emoji: categoryEmoji(cat),
+    photo: null,
+    fromSpendId: spendId,
+    createdAt: Date.now(),
+  });
+  saveStore();
+  closeModal('modalSpend');
+  document.getElementById('spendName').value = '';
+  document.getElementById('spendPrice').value = '';
+  document.getElementById('spendNote').value = '';
+  document.querySelectorAll('#spendEmotionChips .chip').forEach(c => c.classList.remove('active'));
+  removePhoto('spendPhoto');
+  renderAll();
+}
+
+function saveOwn() {
+  const name = document.getElementById('ownName').value.trim();
+  const cat = document.getElementById('ownCat').value;
+  const emoji = document.getElementById('ownEmoji').value.trim() || categoryEmoji(cat);
+  if (!name) { alert('이름을 적어주세요'); return; }
+  store.own.push({
+    id: uid(), name, cat, emoji,
+    photo: tempPhotos.ownPhoto,
+    createdAt: Date.now(),
+  });
+  saveStore();
+  closeModal('modalOwn');
+  document.getElementById('ownName').value = '';
+  document.getElementById('ownEmoji').value = '';
+  removePhoto('ownPhoto');
+  renderAll();
+}
+
+// ===== CATEGORY MANAGEMENT =====
+let editingCatName = null; // null = adding new
+let pickedColor = '#5b8def';
+
+function renderCatManageList() {
+  const wrap = document.getElementById('catManageList');
+  const cats = getCategories();
+  wrap.innerHTML = cats.map((c, idx) => {
+    return `<div class="cat-manage-item">
+      <div class="cat-order-btns">
+        <button class="cat-order-btn" ${idx === 0 ? 'disabled' : ''} onclick="moveCategory('${escapeHTML(c.name)}', -1)" aria-label="위로">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 15 6-6 6 6"/></svg>
+        </button>
+        <button class="cat-order-btn" ${idx === cats.length-1 ? 'disabled' : ''} onclick="moveCategory('${escapeHTML(c.name)}', 1)" aria-label="아래로">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+      </div>
+      <div class="cat-dot" style="background:${hexToRgba(c.color, 0.16)}">${c.emoji}</div>
+      <div class="cat-manage-info">
+        <div class="cat-manage-name">${escapeHTML(c.name)}</div>
+        <div class="cat-manage-budget">${c.budget > 0 ? '월 ' + fmt(c.budget) + '원' : '예산 없음'}</div>
+      </div>
+      <div class="cat-manage-actions">
+        <button class="cat-mini" onclick="openCatEditor('${escapeHTML(c.name)}')" aria-label="수정">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+        </button>
+        <button class="cat-mini danger" onclick="deleteCategory('${escapeHTML(c.name)}')" aria-label="삭제">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function moveCategory(name, dir) {
+  const cats = getCategories();
+  const idx = cats.findIndex(c => c.name === name);
+  const swapIdx = idx + dir;
+  if (swapIdx < 0 || swapIdx >= cats.length) return;
+  const a = cats[idx], b = cats[swapIdx];
+  const tmp = a.order; a.order = b.order; b.order = tmp;
+  saveStore();
+  renderCatManageList();
+  renderAll();
+}
+
+function openCatEditor(name) {
+  editingCatName = name || null;
+  const cat = name ? getCategory(name) : null;
+  document.getElementById('catEditTitle').textContent = name ? '카테고리 수정' : '카테고리 추가';
+  document.getElementById('catName').value = cat ? cat.name : '';
+  document.getElementById('catEmoji').value = cat ? cat.emoji : '';
+  document.getElementById('catBudget').value = cat && cat.budget ? cat.budget : '';
+  pickedColor = cat ? cat.color : PALETTE[1];
+  document.getElementById('catColor').value = pickedColor;
+  renderPalette();
+  openModal('modalCatEdit');
+}
+
+function renderPalette() {
+  const wrap = document.getElementById('catPalette');
+  wrap.innerHTML = PALETTE.map(col =>
+    `<div class="swatch ${col.toLowerCase() === pickedColor.toLowerCase() ? 'active' : ''}" style="background:${col}" onclick="pickColor('${col}')"></div>`
+  ).join('');
+}
+function pickColor(col) {
+  pickedColor = col;
+  document.getElementById('catColor').value = col;
+  renderPalette();
+}
+document.getElementById('catColor').addEventListener('input', e => {
+  pickedColor = e.target.value;
+  renderPalette();
+});
+
+function saveCategory() {
+  const name = document.getElementById('catName').value.trim();
+  const emoji = document.getElementById('catEmoji').value.trim() || '📦';
+  const budget = +document.getElementById('catBudget').value || 0;
+  if (!name) { alert('이름을 적어주세요'); return; }
+
+  // name collision check (allow keeping same name when editing)
+  const clash = store.categories.find(c => c.name === name && c.name !== editingCatName);
+  if (clash) { alert('같은 이름의 카테고리가 이미 있어요'); return; }
+
+  if (editingCatName) {
+    const cat = store.categories.find(c => c.name === editingCatName);
+    const oldName = cat.name;
+    cat.name = name; cat.emoji = emoji; cat.color = pickedColor; cat.budget = budget;
+    // rename propagation to existing records
+    if (oldName !== name) {
+      store.spend.forEach(s => { if (s.cat === oldName) s.cat = name; });
+      store.own.forEach(o => { if (o.cat === oldName) o.cat = name; });
+    }
+  } else {
+    const maxOrder = store.categories.reduce((m, c) => Math.max(m, c.order), -1);
+    store.categories.push({ name, emoji, color: pickedColor, budget, order: maxOrder + 1 });
+  }
+  saveStore();
+  closeModal('modalCatEdit');
+  renderCatManageList();
+  refreshCategorySelects();
+  renderAll();
+}
+
+function deleteCategory(name) {
+  if (store.categories.length <= 1) { alert('최소 한 개의 카테고리는 있어야 해요'); return; }
+  const usedSpend = store.spend.filter(s => s.cat === name).length;
+  const usedOwn = store.own.filter(o => o.cat === name).length;
+  let msg = `"${name}" 카테고리를 삭제할까요?`;
+  if (usedSpend + usedOwn > 0) {
+    const fallback = getCategories().find(c => c.name !== name).name;
+    msg += `\n이 카테고리를 쓰던 기록 ${usedSpend + usedOwn}건은 "${fallback}"(으)로 옮겨집니다.`;
+  }
+  if (!confirm(msg)) return;
+  const fallback = getCategories().find(c => c.name !== name).name;
+  store.spend.forEach(s => { if (s.cat === name) s.cat = fallback; });
+  store.own.forEach(o => { if (o.cat === name) o.cat = fallback; });
+  store.categories = store.categories.filter(c => c.name !== name);
+  saveStore();
+  renderCatManageList();
+  refreshCategorySelects();
+  renderAll();
+}
+
+// fill the spend/own category dropdowns from current categories
+function refreshCategorySelects() {
+  const opts = getCategories().map(c => `<option value="${escapeHTML(c.name)}">${c.emoji} ${escapeHTML(c.name)}</option>`).join('');
+  const spendSel = document.getElementById('spendCat');
+  const ownSel = document.getElementById('ownCat');
+  const sv = spendSel.value, ov = ownSel.value;
+  spendSel.innerHTML = opts;
+  ownSel.innerHTML = opts;
+  // restore selection if still valid
+  if (getCategory(sv).name === sv) spendSel.value = sv;
+  if (getCategory(ov).name === ov) ownSel.value = ov;
+}
+
+
+function saveUnusedThreshold() {
+  const chip = document.querySelector('#unusedThresholdChips .chip.active');
+  if (!chip) { alert('기간을 선택해주세요'); return; }
+  store.settings.unusedMonths = +chip.dataset.m;
+  saveStore();
+  closeModal('modalUnusedThreshold');
+  renderAll();
+}
+
+// ===== BACKUP / RESTORE =====
+function exportData() {
+  const data = JSON.stringify(store, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const d = new Date();
+  const fname = `jamkkan-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fname;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.wish || !data.spend || !data.own) throw new Error('잘못된 파일');
+      if (!confirm('기존 데이터가 모두 덮어쓰여집니다. 계속할까요?\n(혹시 모르니 먼저 백업을 받아두세요)')) {
+        event.target.value = '';
+        return;
+      }
+      store = migrate(data);
+      saveStore();
+      renderAll();
+      alert('복원 완료!');
+    } catch(err) {
+      alert('파일을 읽을 수 없어요: ' + err.message);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function resetAll() {
+  if (!confirm('정말 모든 데이터를 삭제할까요? 되돌릴 수 없어요.')) return;
+  if (!confirm('마지막 확인 — 진짜로요?')) return;
+  localStorage.removeItem(STORE_KEY);
+  store = defaultStore();
+  renderAll();
+  alert('삭제되었습니다');
+}
+
+// ===== RENDER =====
+function renderAll() {
+  document.getElementById('todayDate').textContent = today();
+  renderOwnFilterChips();
+  refreshCategorySelects();
+  renderHome();
+  renderWish();
+  renderSpend();
+  renderOwn();
+  renderInsights();
+  renderSettings();
+}
+
+function renderHome() {
+  const now = Date.now();
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  const monthSpend = store.spend.filter(s => s.createdAt >= monthStart.getTime()).reduce((a,b) => a + (b.price||0), 0);
+  document.getElementById('statSpent').innerHTML = fmt(monthSpend) + '<span class="unit">원</span>';
+  const monthCount = store.spend.filter(s => s.createdAt >= monthStart.getTime()).length;
+  document.getElementById('statSpentSub').textContent = monthCount + '건';
+  document.getElementById('statWish').innerHTML = store.wish.length + '<span class="unit">개</span>';
+  const ready = store.wish.filter(w => dayDiff(w.createdAt, now) >= w.days).length;
+  document.getElementById('statWishSub').textContent = ready ? `${ready}개 결정 대기` : '묵혀두는 중';
+  document.getElementById('statOwn').innerHTML = store.own.length + '<span class="unit">개</span>';
+  const rec = store.spend.filter(s => s.regret !== null && s.regret !== undefined).slice(-10);
+  if (rec.length) {
+    const avg = rec.reduce((a,b) => a + b.regret, 0) / rec.length;
+    document.getElementById('statRegret').textContent = ['좋음','보통','후회'][Math.round(avg)] || '—';
+  } else document.getElementById('statRegret').textContent = '—';
+
+  // unused alert
+  const unused = getUnusedItems();
+  const unusedBox = document.getElementById('unusedAlert');
+  if (unused.length) {
+    unusedBox.innerHTML = `<div class="unused-card" onclick="switchTab('own'); document.querySelector('[data-cat=unused]').click()" style="cursor:pointer">
+      <div class="head">🌿 ${unused.length}개 물건이 잠들어 있어요</div>
+      <div>등록한 지 ${store.settings.unusedMonths}개월이 넘었어요. 다시 꺼내 쓰거나 정리해보세요.</div>
+    </div>`;
+  } else unusedBox.innerHTML = '';
+
+  // budget cards
+  renderBudgetCards();
+
+  // ready wishes
+  const readyWishes = store.wish.filter(w => dayDiff(w.createdAt, now) >= w.days);
+  const wrap = document.getElementById('readyWishList');
+  if (!readyWishes.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-emoji">🪷</div><p>아직 결정할 게 없어요</p><p style="font-size:12px;color:var(--ink-faint)">위시에 담아둔 물건들이 여기 모입니다</p></div>';
+  } else {
+    wrap.innerHTML = readyWishes.map(w => wishItemHTML(w, now, true)).join('');
+    bindWishActions(wrap);
+  }
+
+  // regret popup
+  const askRegret = store.spend.find(s => s.regret == null && dayDiff(s.createdAt, now) >= 3);
+  if (askRegret && !sessionStorage.getItem('regretAsked_' + askRegret.id)) {
+    setTimeout(() => {
+      document.getElementById('regretName').textContent = `${askRegret.name} · ${fmt(askRegret.price)}원`;
+      document.getElementById('saveRegretBtn').onclick = () => {
+        const chip = document.querySelector('#regretChips .chip.active');
+        if (!chip) { alert('선택해주세요'); return; }
+        askRegret.regret = +chip.dataset.r;
+        saveStore();
+        sessionStorage.setItem('regretAsked_' + askRegret.id, '1');
+        document.querySelectorAll('#regretChips .chip').forEach(c => c.classList.remove('active'));
+        closeModal('modalRegret');
+        renderAll();
+      };
+      openModal('modalRegret');
+    }, 600);
+  }
+}
+
+function getUnusedItems() {
+  const now = Date.now();
+  const ms = store.settings.unusedMonths;
+  return store.own.filter(o => monthDiff(o.createdAt, now) >= ms);
+}
+
+function renderBudgetCards() {
+  const wrap = document.getElementById('budgetList');
+  const budgeted = getCategories().filter(c => c.budget > 0);
+  if (!budgeted.length) {
+    wrap.innerHTML = '<div class="empty" style="padding:30px 20px"><p style="font-size:12px">예산을 설정하면 한 달 한도가 보입니다</p></div>';
+    return;
+  }
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  wrap.innerHTML = budgeted.map(c => {
+    const limit = c.budget;
+    const used = store.spend
+      .filter(s => s.createdAt >= monthStart.getTime() && s.cat === c.name)
+      .reduce((a,b) => a + (b.price||0), 0);
+    const pct = Math.min(100, used / limit * 100);
+    const isOver = used > limit;
+    const isWarn = !isOver && pct >= 80;
+    // color: use category color normally, shift toward warn/over states
+    const barColor = isOver ? 'var(--warn)' : isWarn ? '#d4a017' : c.color;
+    return `<div class="budget-card">
+      <div class="budget-head">
+        <span class="budget-cat"><span class="cat-dot" style="display:inline-flex;width:20px;height:20px;font-size:11px;vertical-align:-4px;margin-right:4px;background:${hexToRgba(c.color,0.16)}">${c.emoji}</span>${escapeHTML(c.name)}</span>
+        <span class="budget-amount ${isOver ? 'over' : ''}"><span class="used">${fmt(used)}</span> / ${fmt(limit)}원</span>
+      </div>
+      <div class="budget-track"><div class="budget-fill" style="width:${pct}%;background:${barColor}"></div></div>
+    </div>`;
+  }).join('');
+}
+
+function wishItemHTML(w, now, isReady) {
+  const elapsed = dayDiff(w.createdAt, now);
+  const pct = Math.min(100, Math.round(elapsed / w.days * 100));
+  const remain = w.days - elapsed;
+  return `<div class="wish-item" data-id="${w.id}">
+    <div class="wish-name">${escapeHTML(w.name)}</div>
+    <div class="wish-meta"><span class="wish-price">${fmt(w.price)}원</span><span>· ${w.days}일 묵힘</span></div>
+    <div class="cooldown-bar"><div class="cooldown-fill" style="width:${pct}%"></div></div>
+    <div class="cooldown-label">
+      <span>담은 지 ${elapsed}일</span>
+      ${remain <= 0 ? '<span class="ready">결정해보세요 →</span>' : `<span>${remain}일 남음</span>`}
+    </div>
+    ${w.reason ? `<div class="wish-reason">"${escapeHTML(w.reason)}"</div>` : ''}
+    <div class="wish-actions">
+      ${isReady ? `<button class="icon-btn act-decide" title="결정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5 9-9"/></svg></button>` : ''}
+      <button class="icon-btn act-delete" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+  </div>`;
+}
+
+function bindWishActions(wrap) {
+  wrap.querySelectorAll('.wish-item').forEach(el => {
+    const id = el.dataset.id;
+    const w = store.wish.find(x => x.id === id);
+    const delBtn = el.querySelector('.act-delete');
+    const decBtn = el.querySelector('.act-decide');
+    if (delBtn) delBtn.addEventListener('click', () => {
+      if (confirm('위시에서 빼고 절약으로 기록할까요?')) {
+        store.savedTotal = (store.savedTotal||0) + (w.price||0);
+        store.wish = store.wish.filter(x => x.id !== id);
+        saveStore();
+        renderAll();
+      }
+    });
+    if (decBtn) decBtn.addEventListener('click', () => {
+      document.getElementById('decideName').textContent = `${w.name} · ${fmt(w.price)}원`;
+      document.getElementById('confirmBuyBtn').onclick = () => {
+        const spendId = uid();
+        const fb = (store.categories.find(c => c.name === '기타') || getCategories()[0]);
+        store.spend.push({
+          id: spendId, name: w.name, price: w.price, cat: fb.name,
+          note: w.reason || '', emotion: 'need', photo: null,
+          createdAt: Date.now(), regret: null
+        });
+        store.own.push({
+          id: uid(), name: w.name, cat: fb.name, emoji: fb.emoji,
+          photo: null, fromSpendId: spendId, createdAt: Date.now()
+        });
+        store.wish = store.wish.filter(x => x.id !== id);
+        saveStore();
+        closeModal('modalDecide');
+        renderAll();
+      };
+      document.getElementById('cancelBuyBtn').onclick = () => {
+        store.savedTotal = (store.savedTotal||0) + (w.price||0);
+        store.wish = store.wish.filter(x => x.id !== id);
+        saveStore();
+        closeModal('modalDecide');
+        renderAll();
+      };
+      openModal('modalDecide');
+    });
+  });
+}
+
+function renderWish() {
+  const now = Date.now();
+  document.getElementById('wishCount').textContent = store.wish.length + '개';
+  const wrap = document.getElementById('wishList');
+  if (!store.wish.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-emoji">🌱</div><p>아직 담아둔 게 없어요</p><p style="font-size:12px;color:var(--ink-faint)">충동이 올라올 때, +를 눌러 담아두세요</p></div>';
+    return;
+  }
+  const sorted = [...store.wish].sort((a,b) => {
+    const ra = dayDiff(a.createdAt, now) - a.days;
+    const rb = dayDiff(b.createdAt, now) - b.days;
+    return rb - ra;
+  });
+  wrap.innerHTML = sorted.map(w => wishItemHTML(w, now, dayDiff(w.createdAt, now) >= w.days)).join('');
+  bindWishActions(wrap);
+}
+
+let spendFilter = 'all';
+document.querySelectorAll('#spendFilter .filter-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#spendFilter .filter-chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    spendFilter = c.dataset.filter;
+    renderSpend();
+  });
+});
+
+function renderSpend() {
+  const wrap = document.getElementById('spendList');
+  let list = [...store.spend].sort((a,b) => b.createdAt - a.createdAt);
+  if (spendFilter === 'regret') list = list.filter(s => s.regret === 2);
+  else if (spendFilter !== 'all') list = list.filter(s => s.emotion === spendFilter);
+  document.getElementById('spendCount').textContent = list.length + '건';
+  if (!list.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-emoji">📝</div><p>아직 기록이 없어요</p></div>';
+    return;
+  }
+  const emoLabel = { need:'필요', impulse:'충동', stress:'스트레스', sale:'할인' };
+  wrap.innerHTML = list.map(s => {
+    const d = new Date(s.createdAt);
+    const dateStr = `${d.getMonth()+1}.${d.getDate()}`;
+    const cc = categoryColor(s.cat);
+    const regretHTML = s.regret != null
+      ? `<span class="regret-dot regret-${s.regret}"></span><span style="font-size:11px;color:var(--ink-faint);font-weight:500">${['잘샀음','보통','후회'][s.regret]}</span>`
+      : `<span style="font-size:11px;color:var(--ink-faint);font-weight:500">평가 대기</span>`;
+    return `<div class="purchase-item" data-id="${s.id}">
+      <div class="purchase-emoji" style="background:${s.photo ? 'var(--bg-soft)' : hexToRgba(cc, 0.14)}">${s.photo ? `<img src="${s.photo}" onclick="event.stopPropagation();openImageViewer('${s.photo}')">` : categoryEmoji(s.cat)}</div>
+      <div class="purchase-body">
+        <div class="purchase-name">${escapeHTML(s.name)}</div>
+        <div class="purchase-meta">
+          <span class="purchase-price">${fmt(s.price)}원</span>
+          <span class="tag" style="background:${hexToRgba(cc,0.14)};color:${cc}">${escapeHTML(s.cat)}</span>
+          <span class="tag emotion-${s.emotion}">${emoLabel[s.emotion]}</span>
+          <span style="color:var(--ink-faint)">${dateStr}</span>
+          ${regretHTML}
+        </div>
+        ${s.note ? `<div style="margin-top:6px;font-size:12px;color:var(--ink-soft);line-height:1.5">"${escapeHTML(s.note)}"</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let ownCatFilter = 'all';
+let ownSearchQ = '';
+
+// build category filter chips dynamically (keeps 전체 / 안 쓰는 것 fixed)
+function renderOwnFilterChips() {
+  const wrap = document.getElementById('ownFilter');
+  const fixed = `<div class="filter-chip ${ownCatFilter==='all'?'active':''}" data-cat="all">전체</div>
+    <div class="filter-chip ${ownCatFilter==='unused'?'active':''}" data-cat="unused">안 쓰는 것</div>`;
+  const catChips = getCategories().map(c =>
+    `<div class="filter-chip ${ownCatFilter===c.name?'active':''}" data-cat="${escapeHTML(c.name)}">${c.emoji} ${escapeHTML(c.name)}</div>`
+  ).join('');
+  wrap.innerHTML = fixed + catChips;
+}
+// event delegation — survives re-render
+document.getElementById('ownFilter').addEventListener('click', e => {
+  const chip = e.target.closest('.filter-chip');
+  if (!chip) return;
+  ownCatFilter = chip.dataset.cat;
+  renderOwnFilterChips();
+  renderOwn();
+});
+document.getElementById('ownSearch').addEventListener('input', e => {
+  ownSearchQ = e.target.value.trim().toLowerCase();
+  renderOwn();
+});
+
+function renderOwn() {
+  const wrap = document.getElementById('ownList');
+  const now = Date.now();
+  const ms = store.settings.unusedMonths;
+  let list = [...store.own].sort((a,b) => b.createdAt - a.createdAt);
+  if (ownCatFilter === 'unused') {
+    list = list.filter(o => monthDiff(o.createdAt, now) >= ms);
+  } else if (ownCatFilter !== 'all') {
+    list = list.filter(o => o.cat === ownCatFilter);
+  }
+  if (ownSearchQ) list = list.filter(o => o.name.toLowerCase().includes(ownSearchQ));
+  document.getElementById('ownCount').textContent = store.own.length + '개';
+  if (!list.length) {
+    const msg = ownCatFilter === 'unused'
+      ? '<p style="font-size:12px;color:var(--ink-faint)">잠들어 있는 물건이 없어요 👍</p>'
+      : '<p style="font-size:12px;color:var(--ink-faint)">새로 살 때마다 자동으로 쌓입니다</p>';
+    wrap.innerHTML = `<div class="empty"><div class="empty-emoji">📦</div><p>등록된 물건이 없어요</p>${msg}</div>`;
+    return;
+  }
+  wrap.innerHTML = list.map(o => {
+    const d = new Date(o.createdAt);
+    const months = monthDiff(o.createdAt, now);
+    const isUnused = months >= ms;
+    const cc = categoryColor(o.cat);
+    return `<div class="purchase-item" data-id="${o.id}">
+      <div class="purchase-emoji" style="background:${o.photo ? 'var(--bg-soft)' : hexToRgba(cc, 0.14)}">${o.photo ? `<img src="${o.photo}" onclick="event.stopPropagation();openImageViewer('${o.photo}')">` : (o.emoji || categoryEmoji(o.cat))}</div>
+      <div class="purchase-body">
+        <div class="purchase-name">${escapeHTML(o.name)}</div>
+        <div class="purchase-meta">
+          <span class="tag" style="background:${hexToRgba(cc,0.14)};color:${cc}">${escapeHTML(o.cat)}</span>
+          ${isUnused ? `<span class="tag unused">${months}개월째</span>` : ''}
+          <span style="color:var(--ink-faint)">${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} 등록</span>
+        </div>
+      </div>
+      <button class="icon-btn act-remove-own" title="삭제"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('.act-remove-own').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const id = btn.closest('.purchase-item').dataset.id;
+      if (confirm('물건 목록에서 뺄까요?')) {
+        store.own = store.own.filter(x => x.id !== id);
+        saveStore();
+        renderAll();
+      }
+    });
+  });
+}
+
+function renderInsights() {
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  const monthSpend = store.spend.filter(s => s.createdAt >= monthStart.getTime());
+  const emos = { need: 0, impulse: 0, stress: 0, sale: 0 };
+  monthSpend.forEach(s => { emos[s.emotion] = (emos[s.emotion]||0) + (s.price||0); });
+  const total = Object.values(emos).reduce((a,b) => a+b, 0) || 1;
+  const labels = { need:'필요', impulse:'충동', stress:'스트레스', sale:'할인' };
+  document.getElementById('emotionBreakdown').innerHTML = Object.entries(emos).map(([k,v]) => {
+    const pct = v / total * 100;
+    return `<div class="bar-row"><span>${labels[k]}</span><div class="bar-track"><div class="bar-fill ${k==='impulse'||k==='stress'?'regret':''}" style="width:${pct}%"></div></div><span class="bar-value">${fmt(v)}</span></div>`;
+  }).join('');
+
+  const cats = {};
+  store.spend.filter(s => s.regret != null).forEach(s => {
+    if (!cats[s.cat]) cats[s.cat] = { sum: 0, n: 0 };
+    cats[s.cat].sum += s.regret;
+    cats[s.cat].n += 1;
+  });
+  const catWrap = document.getElementById('regretByCategory');
+  const entries = Object.entries(cats).map(([k, {sum, n}]) => [k, sum/n, n]).sort((a,b) => b[1] - a[1]);
+  if (!entries.length) {
+    catWrap.innerHTML = '<p style="font-size:13px;color:var(--ink-faint);font-weight:500">아직 후회 평가가 쌓이지 않았어요. 소비 후 3일이 지나면 물어봐요.</p>';
+  } else {
+    catWrap.innerHTML = entries.map(([k, avg, n]) => {
+      const pct = avg / 2 * 100;
+      const cc = categoryColor(k);
+      return `<div class="bar-row"><span>${getCategory(k).emoji} ${escapeHTML(k)}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${cc}"></div></div><span class="bar-value">${['좋','중','후'][Math.round(avg)]}</span></div>`;
+    }).join('') + `<p style="font-size:11px;color:var(--ink-faint);margin-top:8px;font-weight:500">막대가 길수록 후회가 많은 카테고리</p>`;
+  }
+
+  document.getElementById('savedAmount').innerHTML = fmt(store.savedTotal||0) + '<span class="unit">원</span>';
+  document.getElementById('savedSub').textContent = (store.savedTotal||0) > 0 ? '잘 참았어요' : '위시를 포기하면 여기에 쌓입니다';
+}
+
+function renderSettings() {
+  const bCount = getCategories().filter(c => c.budget > 0).length;
+  document.getElementById('budgetCountSub').textContent = `카테고리 ${store.categories.length}개 · 예산 ${bCount}개`;
+  document.getElementById('unusedThresholdSub').textContent = `${store.settings.unusedMonths}개월`;
+}
+
+// initialize store now that all helpers (DEFAULT_CATEGORIES, migrate, defaultStore) exist
+store = loadStore();
+
+renderAll();
+setInterval(renderHome, 30000);
+</script>
+</body>
+</html>
